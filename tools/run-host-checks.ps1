@@ -16,7 +16,8 @@ if ($Name -notmatch '^[A-Za-z0-9_][A-Za-z0-9_-]{0,63}$' -or
 if ([string]::IsNullOrWhiteSpace($Compiler)) {
     $Compiler = 'gcc'
 }
-$cc = Get-Command -Name $Compiler -CommandType Application -ErrorAction SilentlyContinue
+$cc = Get-Command -Name $Compiler -CommandType Application -ErrorAction SilentlyContinue |
+    Select-Object -First 1
 if (-not $cc) { throw "Host C compiler not found: $Compiler. Set -Compiler or DUALECU_HOST_CC to native GCC." }
 $root = Split-Path -Parent $PSScriptRoot
 if (-not $Sources) { $Sources = @(Join-Path $root 'validation\host\smoke.c') }

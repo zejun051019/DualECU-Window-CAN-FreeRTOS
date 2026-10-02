@@ -6,6 +6,8 @@
 
 用一套双节点台架模拟车窗升降：**F407 处理按键和通信请求，G3507 执行本地故障门控，再通过 UART 控制 X42S 闭环步进电机。** 当前演示使用空轴，以相对 90° 行程呈现升降、停止与回程。
 
+**快速审阅：** [任务与共享资源](docs/architecture.md) · [协议与显式恢复](docs/protocol.md) · [真实排障案例](docs/debugging-case.md) · [台架数据](docs/verification.md)。下方“工程重点”表将每项设计连接到对应源码。
+
 ## 功能演示
 
 | 操作 | 台架行为 |
@@ -54,6 +56,7 @@ flowchart LR
 - [CAN 协议与恢复流程](docs/protocol.md)
 - [接线、构建、下载与运行](docs/build-and-run.md)
 - [功能与故障验证记录](docs/verification.md)
+- [排障案例：设零确认期间的短按处理](docs/debugging-case.md)
 - [厂商代码许可说明](NOTICE.md)
 
 ```text

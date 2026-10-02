@@ -1,0 +1,124 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "debug-armgcc",
+      "displayName": "Debug ARM GCC",
+      "description": "Use ARM GCC with Ninja in Debug mode",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_MAKE_PROGRAM": "$env{NINJA_ROOT}/ninja.exe",
+        "ARM_GCC_TOOLCHAIN_ROOT_DIR": "$env{ARM_GCC_ROOT}",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "release-armgcc",
+      "displayName": "Release ARM GCC",
+      "description": "Use ARM GCC with Ninja in Release mode",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_MAKE_PROGRAM": "$env{NINJA_ROOT}/ninja.exe",
+        "ARM_GCC_TOOLCHAIN_ROOT_DIR": "$env{ARM_GCC_ROOT}",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "motor-step-test",
+      "displayName": "Motor STEP Bench Test (active-high input)",
+      "description": "Separate debug build; debugger-triggered five-pulse test, default OFF in production",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-motor-step-test",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_MAKE_PROGRAM": "$env{NINJA_ROOT}/ninja.exe",
+        "ARM_GCC_TOOLCHAIN_ROOT_DIR": "$env{ARM_GCC_ROOT}",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "DUALECU_ENABLE_MOTOR_STEP_TEST": "ON"
+      }
+    },
+    {
+      "name": "zdt-can-feedback",
+      "displayName": "ZDT CAN Feedback (read-only)",
+      "description": "Separate debug build for opt-in read-only motor position polling",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-zdt-can-feedback",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_MAKE_PROGRAM": "$env{NINJA_ROOT}/ninja.exe",
+        "ARM_GCC_TOOLCHAIN_ROOT_DIR": "$env{ARM_GCC_ROOT}",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "DUALECU_ENABLE_ZDT_CAN_FEEDBACK": "ON"
+      }
+    },
+    {
+      "name": "zdt-uart-bench",
+      "displayName": "ZDT UART Motion and Feedback Bench Test",
+      "description": "Separate debug image; startup only reads options/position, and motion requires one explicit debugger request",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-zdt-uart-bench",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_MAKE_PROGRAM": "$env{NINJA_ROOT}/ninja.exe",
+        "ARM_GCC_TOOLCHAIN_ROOT_DIR": "$env{ARM_GCC_ROOT}",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "DUALECU_ENABLE_ZDT_UART_BENCH_TEST": "ON"
+      }
+    },
+    {
+      "name": "zdt-uart-control",
+      "displayName": "ZDT UART Control Safety Gate (motion locked until calibrated)",
+      "description": "Separate V1 integration image; boots to UART STOP and rejects CAN UP/DOWN until calibrated",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-zdt-uart-control",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_MAKE_PROGRAM": "$env{NINJA_ROOT}/ninja.exe",
+        "ARM_GCC_TOOLCHAIN_ROOT_DIR": "$env{ARM_GCC_ROOT}",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "DUALECU_ENABLE_ZDT_UART_CONTROL": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-debug",
+      "configurePreset": "debug-armgcc",
+      "jobs": 8
+    },
+    {
+      "name": "build-release",
+      "configurePreset": "release-armgcc",
+      "jobs": 8
+    },
+    {
+      "name": "build-motor-step-test",
+      "configurePreset": "motor-step-test",
+      "jobs": 8
+    },
+    {
+      "name": "build-zdt-can-feedback",
+      "configurePreset": "zdt-can-feedback",
+      "jobs": 8
+    },
+    {
+      "name": "build-zdt-uart-bench",
+      "configurePreset": "zdt-uart-bench",
+      "jobs": 8
+    },
+    {
+      "name": "build-zdt-uart-control",
+      "configurePreset": "zdt-uart-control",
+      "jobs": 8
+    }
+  ]
+}

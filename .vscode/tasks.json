@@ -1,0 +1,88 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "F407: Build",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/tools/build.ps1",
+        "-Target",
+        "F407"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "F407: Flash",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/tools/flash.ps1",
+        "-Target",
+        "F407"
+      ],
+      "dependsOn": "F407: Build",
+      "problemMatcher": []
+    },
+    {
+      "label": "G3507: Build",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/tools/build.ps1",
+        "-Target",
+        "G3507"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "G3507: Flash",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/tools/flash.ps1",
+        "-Target",
+        "G3507"
+      ],
+      "dependsOn": "G3507: Build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Host: 14 C check groups",
+      "type": "shell",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/tools/run-project-host-checks.ps1"
+      ],
+      "problemMatcher": "$gcc"
+    }
+  ]
+}

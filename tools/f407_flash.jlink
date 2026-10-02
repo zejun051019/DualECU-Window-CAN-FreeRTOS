@@ -1,0 +1,5 @@
+r
+loadfile firmware/f407/build/Debug/f407.elf
+r
+g
+exit

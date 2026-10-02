@@ -1,0 +1,58 @@
+[
+  {
+    "scenario": "rise",
+    "samples": 150,
+    "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
+    "source_samples_sha256": "1a0a18b3ba30f0346e2f0231f845fcf2cb2f9ac780cfb92a6a0684e3f04be27e",
+    "public_sample_file": "rise.json"
+  },
+  {
+    "scenario": "return",
+    "samples": 47,
+    "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
+    "source_samples_sha256": "200a0887639782d60736dfc845c0ea502967a2561aba01e7f2e8c4e318697624",
+    "public_sample_file": "return.json"
+  },
+  {
+    "scenario": "stop",
+    "samples": 26,
+    "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
+    "source_samples_sha256": "1b3c84d22bd7fcd5fd790d497bc71f8520f7f7c09fa22f4abac42b1654b0921d",
+    "public_sample_file": "stop.json"
+  },
+  {
+    "scenario": "return-after-stop",
+    "samples": 25,
+    "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
+    "source_samples_sha256": "1e6b153c4b3b3635d2277735b18cb5efe89c0dcb69c8e6097f79d16890ee1143",
+    "public_sample_file": "return-after-stop.json"
+  },
+  {
+    "scenario": "can-loss",
+    "samples": 5,
+    "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
+    "source_samples_sha256": "76bffe1e84a082c3498fcc36f26a94081629b4996d00392db6b133ea8a03614b",
+    "public_sample_file": "can-loss.json"
+  },
+  {
+    "scenario": "can-recovery",
+    "samples": 4,
+    "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
+    "source_samples_sha256": "97b638684701973d0585afdbffc74f42aa2aa4dc5d9371e8b501bc38b2446dd2",
+    "public_sample_file": "can-recovery.json"
+  },
+  {
+    "scenario": "feedback-loss",
+    "samples": 9,
+    "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
+    "source_samples_sha256": "f7b8520beac11c0c65643011d6f9ee7f76617a9de38798f111f681aafa73e33d",
+    "public_sample_file": "feedback-loss.json"
+  },
+  {
+    "scenario": "device-error",
+    "samples": 5,
+    "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
+    "source_samples_sha256": "1884c70e7f32818a91f6ae919d8fe40a1facfe2668b579d9c33cad5b926fe5ab",
+    "public_sample_file": "device-error.json"
+  }
+]

@@ -1,0 +1,176 @@
+#ifndef APP_CAN_PHYSICAL_H
+#define APP_CAN_PHYSICAL_H
+
+#include "cmsis_os2.h"
+#include "stm32f4xx_hal.h"
+
+/* Task 2 link probe followed by the safe Task 3 recovery handshake. */
+typedef enum
+{
+  APP_CAN_RECOVERY_RESULT_NOT_STARTED = 0U,
+  APP_CAN_RECOVERY_RESULT_RUNNING,
+  APP_CAN_RECOVERY_RESULT_PASS,
+  APP_CAN_RECOVERY_RESULT_TX_FAILED,
+  APP_CAN_RECOVERY_RESULT_SEQUENCE_ERROR
+} app_can_recovery_result_t;
+
+typedef enum
+{
+  APP_CAN_MATRIX_NOT_STARTED = 0U,
+  APP_CAN_MATRIX_RUNNING,
+  APP_CAN_MATRIX_PASS,
+  APP_CAN_MATRIX_FAIL
+} app_can_matrix_result_t;
+
+typedef enum
+{
+  APP_CAN_T04_NOT_STARTED = 0U,
+  APP_CAN_T04_RUNNING,
+  APP_CAN_T04_PASS,
+  APP_CAN_T04_FAIL
+} app_can_t04_result_t;
+
+typedef enum
+{
+  APP_CAN_T04_IDLE = 0U,
+  APP_CAN_T04_SEND_BASELINE_STOP,
+  APP_CAN_T04_WAIT_BASELINE_STOP,
+  APP_CAN_T04_SEND_FIRST_CLEAR,
+  APP_CAN_T04_WAIT_FIRST_CLEAR,
+  APP_CAN_T04_SEND_INSERT_STOP,
+  APP_CAN_T04_WAIT_INSERT_STOP,
+  APP_CAN_T04_WAIT_CONDITION_RELEASE,
+  APP_CAN_T04_SEND_OLD_CLEAR,
+  APP_CAN_T04_WAIT_OLD_CLEAR,
+  APP_CAN_T04_SEND_NEW_CLEAR,
+  APP_CAN_T04_WAIT_NEW_CLEAR,
+  APP_CAN_T04_SEND_FINAL_STOP,
+  APP_CAN_T04_WAIT_FINAL_STOP,
+  APP_CAN_T04_COMPLETE,
+  APP_CAN_T04_FAILED
+} app_can_t04_stage_t;
+
+typedef enum
+{
+  APP_CAN_LOCAL_STOP_NONE = 0U,
+  APP_CAN_LOCAL_STOP_RX_QUEUE_OVERFLOW,
+  APP_CAN_LOCAL_STOP_RX_FIFO_OVERRUN,
+  APP_CAN_LOCAL_STOP_STATUS_OFFLINE,
+  APP_CAN_LOCAL_STOP_TX_FAILURE,
+  APP_CAN_LOCAL_STOP_REMOTE_MOTOR,
+  APP_CAN_LOCAL_STOP_USER_BUTTON
+} app_can_local_stop_reason_t;
+
+extern volatile uint32_t g_can_physical_start_result;
+extern volatile uint32_t g_can_physical_status_rx_count;
+extern volatile uint32_t g_can_physical_invalid_rx_count;
+extern volatile uint32_t g_can_physical_fifo_overrun_count;
+extern volatile uint32_t g_can_physical_last_fault;
+extern volatile uint32_t g_can_physical_last_status_sequence;
+extern volatile uint32_t g_can_physical_last_status_state;
+extern volatile uint32_t g_can_physical_last_status_flags;
+extern volatile uint32_t g_can_physical_stop_tx_request_count;
+extern volatile uint32_t g_can_physical_stop_tx_success_count;
+extern volatile uint32_t g_can_physical_stop_tx_error_count;
+extern volatile uint32_t g_can_physical_stop_status_match_count;
+extern volatile uint32_t g_can_physical_clear_tx_request_count;
+extern volatile uint32_t g_can_physical_clear_tx_success_count;
+extern volatile uint32_t g_can_physical_clear_tx_error_count;
+extern volatile uint32_t g_can_physical_clear_status_match_count;
+extern volatile uint32_t g_can_physical_final_stop_tx_request_count;
+extern volatile uint32_t g_can_physical_final_stop_tx_success_count;
+extern volatile uint32_t g_can_physical_final_stop_tx_error_count;
+extern volatile uint32_t g_can_physical_final_stop_status_match_count;
+extern volatile uint32_t g_can_physical_stop_ack_timeout_count;
+extern volatile uint32_t g_can_physical_clear_ack_timeout_count;
+extern volatile uint32_t g_can_physical_final_stop_ack_timeout_count;
+extern volatile uint32_t g_can_physical_clear_rejected_count;
+extern volatile uint32_t g_can_physical_freshness_blocked_count;
+extern volatile uint32_t g_can_physical_recovery_client_stage;
+extern volatile uint32_t g_can_physical_recovery_test_result;
+extern volatile uint32_t g_can_physical_recovery_sequence_error_site;
+extern volatile uint32_t g_can_physical_matrix_stage;
+extern volatile uint32_t g_can_physical_matrix_result;
+extern volatile uint32_t g_can_physical_matrix_enable;
+extern volatile uint32_t g_can_physical_matrix_hold_up;
+extern volatile uint32_t g_can_physical_matrix_tx_count;
+extern volatile uint32_t g_can_physical_matrix_unexpected_status_count;
+extern volatile uint32_t g_can_physical_t04_arm;
+extern volatile uint32_t g_can_physical_t04_start;
+extern volatile uint32_t g_can_physical_t04_stage;
+extern volatile uint32_t g_can_physical_t04_result;
+extern volatile uint32_t g_can_physical_t04_tx_count;
+extern volatile uint32_t g_can_physical_t04_status_match_count;
+extern volatile uint32_t g_can_physical_t04_unexpected_status_count;
+extern volatile uint32_t g_can_physical_t04_fixture_tx_count;
+extern volatile uint32_t g_can_physical_last_hal_error;
+extern volatile uint32_t g_can_physical_tx_request_count;
+extern volatile uint32_t g_can_physical_tx_success_count;
+extern volatile uint32_t g_can_physical_tx_error_count;
+extern volatile uint32_t g_can_physical_tx_last_esr;
+extern volatile uint32_t g_can_physical_probe_frame_count;
+extern volatile uint32_t g_can_physical_probe_valid_count;
+extern volatile uint32_t g_can_physical_probe_first_counter;
+extern volatile uint32_t g_can_physical_probe_last_counter;
+extern volatile uint32_t g_can_physical_probe_missing_count;
+extern volatile uint32_t g_can_physical_probe_duplicate_count;
+extern volatile uint32_t g_can_physical_probe_stale_count;
+extern volatile uint32_t g_can_physical_probe_invalid_count;
+extern volatile uint32_t g_can_physical_rx_queue_create_ok;
+extern volatile uint32_t g_can_physical_task_create_failure;
+extern volatile uint32_t g_can_physical_stack_overflow_fault;
+extern volatile uint32_t g_can_physical_malloc_failed_fault;
+extern volatile uint32_t g_can_physical_rx_queue_put_count;
+extern volatile uint32_t g_can_physical_rx_queue_get_count;
+extern volatile uint32_t g_can_physical_rx_queue_drop_count;
+extern volatile uint32_t g_can_physical_rx_queue_current;
+extern volatile uint32_t g_can_physical_rx_queue_high_water;
+extern volatile uint32_t g_can_physical_rx_isr_count;
+extern volatile uint32_t g_can_physical_rx_isr_max_batch;
+extern volatile uint32_t g_can_physical_rx_notification_pause_count;
+extern volatile uint32_t g_can_physical_rx_notification_resume_count;
+extern volatile uint32_t g_can_physical_rx_status_snapshot_count;
+extern volatile uint32_t g_can_physical_rx_status_stale_count;
+extern volatile uint32_t g_can_physical_rx_remote_status_age_ms;
+extern volatile uint32_t g_can_physical_rx_remote_offline;
+extern volatile uint32_t g_can_physical_rx_overflow_first_tick_ms;
+extern volatile uint32_t g_can_physical_rx_status_last_received_tick_ms;
+extern volatile uint32_t g_can_physical_rx_status_last_processed_tick_ms;
+extern volatile uint32_t g_can_physical_tx_task_cycle_count;
+extern volatile uint32_t g_can_physical_tx_task_late_count;
+extern volatile uint32_t g_can_physical_tx_task_max_interval_ms;
+extern volatile uint32_t g_can_physical_tx_task_stack_space_bytes;
+extern volatile uint32_t g_can_physical_rx_task_stack_space_bytes;
+extern volatile uint32_t g_can_physical_heap_free_bytes;
+extern volatile uint32_t g_can_physical_heap_min_free_bytes;
+extern volatile uint32_t g_can_physical_rx_overflow_latched;
+extern volatile uint32_t g_can_physical_rx_overflow_active;
+extern volatile uint32_t g_can_physical_local_stop_latched;
+extern volatile uint32_t g_can_physical_local_stop_reason;
+extern volatile uint32_t g_can_physical_local_stop_latched_tick_ms;
+extern volatile uint32_t g_can_physical_safe_stop_tx_request_count;
+extern volatile uint32_t g_can_physical_safe_stop_tx_request_tick_ms;
+extern volatile uint32_t g_can_physical_safe_stop_tx_success_count;
+extern volatile uint32_t g_can_physical_safe_stop_tx_success_tick_ms;
+extern volatile uint32_t g_can_physical_safe_stop_tx_error_count;
+extern volatile uint32_t g_can_physical_safe_stop_status_match_count;
+extern volatile uint32_t g_can_physical_safe_stop_status_match_tick_ms;
+extern volatile uint32_t g_can_physical_window_request_tx_count;
+extern volatile uint32_t g_can_physical_window_request_tx_error_count;
+extern volatile uint32_t g_can_physical_window_request_up_inject;
+extern volatile uint32_t g_can_physical_window_request_up_result;
+extern volatile uint32_t g_can_physical_window_request_up_sequence;
+extern volatile uint32_t g_can_physical_window_request_rearm;
+extern volatile uint32_t g_can_physical_window_request_rearm_result;
+extern volatile uint32_t g_can_physical_rx_task_test_pause;
+extern volatile uint32_t g_can_physical_button_raw;
+extern volatile uint32_t g_can_physical_button_last_event;
+extern volatile uint32_t g_can_physical_button_event_count;
+extern volatile uint32_t g_can_physical_button_rejected_count;
+
+uint8_t App_CanPhysical_Configure(CAN_HandleTypeDef *can);
+uint8_t App_CanPhysical_Start(void);
+osThreadId_t App_CanPhysical_CreateRxTask(void);
+void App_CanPhysical_TxTask(void *argument);
+
+#endif

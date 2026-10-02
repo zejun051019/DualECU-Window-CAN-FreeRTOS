@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "F407: Attach with J-Link",
+      "type": "cortex-debug",
+      "request": "attach",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/firmware/f407/build/Debug/f407.elf",
+      "servertype": "jlink",
+      "serverpath": "${env:JLINK_ROOT}/JLinkGDBServerCL.exe",
+      "device": "STM32F407ZG",
+      "interface": "swd",
+      "armToolchainPath": "${env:F407_ARM_GCC_ROOT}/bin",
+      "showDevDebugOutput": "none"
+    },
+    {
+      "name": "G3507: Attach with XDS110",
+      "type": "cortex-debug",
+      "request": "attach",
+      "cwd": "${workspaceFolder}",
+      "executable": "${workspaceFolder}/firmware/g3507/build-zdt-uart-control/MSPM0.elf",
+      "servertype": "openocd",
+      "serverpath": "${env:OPENOCD_ROOT}/bin/openocd.exe",
+      "armToolchainPath": "${env:ARM_GCC_ROOT}/bin",
+      "debuggerArgs": ["-iex", "set remote noack-packet off"],
+      "configFiles": ["${workspaceFolder}/firmware/g3507/linker/CFG.cfg"],
+      "searchDir": ["${env:OPENOCD_SCRIPTS}"],
+      "device": "MSPM0G3507",
+      "svdFile": "${workspaceFolder}/firmware/g3507/linker/MSPM0G350X.svd",
+      "showDevDebugOutput": "none",
+      "postAttachCommands": ["monitor halt"]
+    }
+  ]
+}

@@ -10,6 +10,12 @@
 
 ## 功能演示
 
+**[▶ 浏览器直接播放实机演示（约59秒）](https://zejun051019.github.io/DualECU-Window-CAN-FreeRTOS/demo/)**
+
+<a href="https://zejun051019.github.io/DualECU-Window-CAN-FreeRTOS/demo/"><img src="docs/demo/poster.jpg" width="240" alt="双 ECU 按键与电机动作演示预览"></a>
+
+点击进入播放器，可在手机或电脑浏览器直接观看，无需下载或安装HEVC扩展。视频为H.264/AAC MP4；展示实体台架按键与电机动作，故障场景和数据另见[验证记录](docs/verification.md)。
+
 | 操作 | 台架行为 |
 |---|---|
 | 长按 F407 的 KEY_UP / WKUP 约 2.5 秒，松开 | 显式恢复并建立临时软件零点；轴保持静止 |

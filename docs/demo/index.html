@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="双 ECU 车窗执行器控制原型实机演示：STM32F407 FreeRTOS、Classic CAN、MSPM0G3507 本地保护与 UART 电机反馈。">
+  <title>实机演示 · 双 ECU 车窗执行器控制原型</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f3f6fa; color: #18283e; line-height: 1.7; }
+    main { max-width: 1000px; margin: auto; padding: 32px 24px 24px; }
+    .eyebrow { margin: 0 0 8px; color: #526680; font-size: 14px; letter-spacing: .06em; }
+    h1 { margin: 0; font-size: clamp(24px, 4vw, 35px); line-height: 1.35; }
+    .intro { max-width: 760px; margin: 16px 0 24px; color: #4c5e73; }
+    .demo { display: grid; grid-template-columns: minmax(260px, 380px) 1fr; gap: 32px; align-items: start; }
+    .player { padding: 12px; border: 1px solid #dce4ef; border-radius: 16px; background: #fff; }
+    video { display: block; width: 100%; max-height: 72vh; background: #0d1420; border-radius: 8px; aspect-ratio: 9 / 16; }
+    .caption { margin: 12px 2px 2px; font-size: 14px; color: #526680; }
+    h2 { margin: 0 0 12px; font-size: 20px; }
+    .details { padding-top: 4px; }
+    .chain { margin: 0 0 22px; padding: 16px; background: #e8eff8; border-radius: 10px; font-weight: 600; }
+    ul { padding-left: 22px; margin: 12px 0 24px; }
+    li { margin-bottom: 10px; }
+    .links { display: flex; flex-wrap: wrap; gap: 10px; }
+    a { color: #2356a0; text-underline-offset: 3px; }
+    .button { display: inline-block; padding: 9px 15px; border: 1px solid #ccd9e9; border-radius: 8px; background: #fff; text-decoration: none; font-weight: 600; }
+    .primary { color: #fff; background: #2356a0; border-color: #2356a0; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible { outline: 3px solid #b87700; outline-offset: 4px; }
+    footer { margin-top: 28px; padding-top: 16px; border-top: 1px solid #dce4ef; font-size: 13px; color: #5d6d81; }
+    @media (max-width: 650px) {
+      main { padding: 22px 16px; }
+      .demo { grid-template-columns: 1fr; gap: 24px; }
+      .player { max-width: 380px; width: 100%; margin: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">嵌入式软件项目 · 实体台架演示</p>
+    <h1>双 ECU 车窗执行器控制原型</h1>
+    <p class="intro">用两块 MCU 和带反馈的电机模拟车窗升降。点击下方播放器即可观看约 59 秒的现场视频，手机与电脑都可直接打开。</p>
+    <div class="demo">
+      <section class="player" aria-label="现场演示视频">
+        <video id="demo-video" controls playsinline preload="metadata" poster="poster.jpg" aria-label="双 ECU 按键与电机动作演示">
+          <source src="window-demo.mp4" type="video/mp4">
+          浏览器不支持视频播放，可<a href="window-demo.mp4" download>下载 MP4</a>观看。
+        </video>
+        <p class="caption">现场拍摄：开发板按键与电机动作。视频保留原有声音，可全屏观看。</p>
+      </section>
+      <section class="details" aria-labelledby="architecture-title">
+        <h2 id="architecture-title">控制链路</h2>
+        <p class="chain">F407 按键 / FreeRTOS<br>↓ Classic CAN<br>G3507 本地门控<br>↓ UART 命令与反馈<br>X42S 电机</p>
+        <h2>台架功能</h2>
+        <ul>
+          <li><strong>长按：</strong>显式恢复并建立临时零点，轴保持静止。</li>
+          <li><strong>短按：</strong>请求约 90° 上行，到上端后再按请求回程。</li>
+          <li><strong>运动中短按：</strong>中途停止，新操作才允许再次运动。</li>
+        </ul>
+        <h2>值得看源码的部分</h2>
+        <ul>
+          <li>FreeRTOS 的中断 → 队列 → 任务链路，以及共享状态和接收时间的处理。</li>
+          <li>序号、状态确认与 STOP → CLEAR → STOP 显式恢复；发送成功与业务执行分开。</li>
+          <li>执行端本地失联停止、故障锁存和有限小段运动；重连不恢复旧目标。</li>
+        </ul>
+        <div class="links">
+          <a class="button primary" href="https://github.com/zejun051019/DualECU-Window-CAN-FreeRTOS">项目源码</a>
+          <a class="button" href="https://github.com/zejun051019/DualECU-Window-CAN-FreeRTOS/blob/main/docs/architecture.md">架构与任务设计</a>
+          <a class="button" href="https://github.com/zejun051019/DualECU-Window-CAN-FreeRTOS/blob/main/docs/verification.md">验证记录</a>
+        </div>
+      </section>
+    </div>
+    <footer>这是带驱动器的空轴电机台架，不是实车车窗。视频展示按键和电机动作；协议与故障验证的输入方式、版本和数据见项目记录。电机内部负责闭环，本项目负责跨节点请求、反馈监督与故障处理。</footer>
+  </main>
+</body>
+</html>

@@ -14,6 +14,15 @@
 #define CAN_PORT_MSPM0_TIMESTAMP_PRESCALER     (15U)
 #define CAN_PORT_MSPM0_SECOND_FILTER_INDEX     (1U)
 #define CAN_PORT_MSPM0_MOTOR_FILTER_INDEX      (0U)
+#define CAN_PORT_MSPM0_RECOVERY_RETRY_MS       (250U)
+
+volatile uint32_t g_can_port_bus_off_count;
+volatile uint32_t g_can_port_recovery_attempt_count;
+volatile uint32_t g_can_port_recovery_complete_count;
+volatile uint32_t g_can_port_last_error_code;
+static bool s_busOffActive;
+static bool s_hasRecoveryAttempt;
+static uint32_t s_lastRecoveryAttemptMs;
 
 #if MCAN0_INST_MCAN_STD_ID_FILTER_NUM < 2
 #error "SysConfig must reserve two standard CAN filter slots."
@@ -132,12 +141,53 @@ bool can_port_mspm0_init(void)
     return canPortMspm0WaitForMode(DL_MCAN_OPERATION_MODE_NORMAL);
 }
 
+bool can_port_mspm0_service_bus_off(uint32_t now_ms)
+{
+    DL_MCAN_ProtocolStatus status = {0};
+    DL_MCAN_getProtocolStatus(MCAN0_INST, &status);
+    if ((status.lastErrCode > 0U) && (status.lastErrCode < 7U))
+    {
+        g_can_port_last_error_code = status.lastErrCode;
+    }
+    if (status.busOffStatus == 0U)
+    {
+        if (s_busOffActive)
+        {
+            s_busOffActive = false;
+            ++g_can_port_recovery_complete_count;
+        }
+        return false;
+    }
+    if (!s_busOffActive)
+    {
+        s_busOffActive = true;
+        ++g_can_port_bus_off_count;
+        /* Discard pending pre-fault transmissions before enabling the link. */
+        for (uint32_t buffer = 0U; buffer < 3U; ++buffer)
+        {
+            (void)DL_MCAN_txBufCancellationReq(MCAN0_INST, buffer);
+        }
+    }
+    if ((DL_MCAN_getOpMode(MCAN0_INST) == DL_MCAN_OPERATION_MODE_SW_INIT) &&
+        (!s_hasRecoveryAttempt ||
+         ((uint32_t)(now_ms - s_lastRecoveryAttemptMs) >=
+          CAN_PORT_MSPM0_RECOVERY_RETRY_MS)))
+    {
+        s_lastRecoveryAttemptMs = now_ms;
+        s_hasRecoveryAttempt = true;
+        ++g_can_port_recovery_attempt_count;
+        /* Hardware observes the recessive-bit recovery sequence asynchronously. */
+        DL_MCAN_setOpMode(MCAN0_INST, DL_MCAN_OPERATION_MODE_NORMAL);
+    }
+    return true;
+}
+
 bool can_port_mspm0_send_frame(const can_protocol_frame_t *frame)
 {
     DL_MCAN_TxBufElement txMessage = {0};
     uint32_t txBuffer;
 
-    if ((frame == NULL) ||
+    if (s_busOffActive || (frame == NULL) ||
         (frame->id > (frame->is_extended ? 0x1FFFFFFFU : 0x7FFU)) ||
         (frame->dlc > CAN_PROTOCOL_MAX_DATA_LEN))
     {

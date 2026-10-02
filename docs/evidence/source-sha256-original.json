@@ -9,7 +9,7 @@
   },
   {
     "path": "firmware/f407/App/Inc/app_button.h",
-    "sha256": "a69b1b324f96e7ddc86b85d03b2d7fdc67c99319a33a803695ffcaa1f39f2872"
+    "sha256": "69c41cf82bfbb89893368c367d7ee6ecc92ed578dfed11e6a8bc7c9a3b56011b"
   },
   {
     "path": "firmware/f407/App/Inc/app_can_loopback.h",
@@ -17,7 +17,7 @@
   },
   {
     "path": "firmware/f407/App/Inc/app_can_physical.h",
-    "sha256": "6a4c28a4e8e1187ab3ddb14e9b84fa6d620a4864eacce97723822a8cf7dd5f9f"
+    "sha256": "50736bd3c72f170531471b4eb94938dde41cf3c0117ac679194ceaac3604021a"
   },
   {
     "path": "firmware/f407/App/Inc/app_rtos_lab.h",
@@ -29,7 +29,7 @@
   },
   {
     "path": "firmware/f407/App/Src/app_button.c",
-    "sha256": "7d8bd6a700da3c328585da47abece60c14a0d20785162a18f696eabf91c910cb"
+    "sha256": "1009dbb13fe28e67d53b3cdd0edb6d38cfd7dcccdf627c3d9ac8dd805ca7c1b1"
   },
   {
     "path": "firmware/f407/App/Src/app_can_loopback.c",
@@ -37,7 +37,7 @@
   },
   {
     "path": "firmware/f407/App/Src/app_can_physical.c",
-    "sha256": "5ab0c0463a5ff047f50bb26c6f47b1582ca03f08232c5eec9c713cb7916bc631"
+    "sha256": "f28f8890bd58a3f5055cedc2948d52b37688cca22930496d1f95a5178166a690"
   },
   {
     "path": "firmware/f407/App/Src/app_rtos_lab.c",
@@ -45,7 +45,7 @@
   },
   {
     "path": "firmware/f407/CMakeLists.txt",
-    "sha256": "0a1dff6002150d5a8c6c60df5902b2387901391d913deb78e84845317b85e36a"
+    "sha256": "8c77d5a82e4e0001ca7061579a44e836e40210c1609b8bb89c536c04c4e79e9a"
   },
   {
     "path": "firmware/f407/CMakePresets.json",
@@ -73,7 +73,7 @@
   },
   {
     "path": "firmware/f407/Core/Src/main.c",
-    "sha256": "c0dfa8916ff2a338eb5bc20c46d488c57e8a31ea74dbe07685a2ab4f55c84a2c"
+    "sha256": "7aaf46d6fdd3ef72e875246c7599cfadf0627aed6681ebdd42b9d1ba6451b214"
   },
   {
     "path": "firmware/f407/Core/Src/stm32f4xx_hal_msp.c",
@@ -1765,7 +1765,7 @@
   },
   {
     "path": "firmware/f407/f407.ioc",
-    "sha256": "5b90f8ebd77cdb21c429dcf22fc3973d8ed767e8495c7cf12202504bb8a320db"
+    "sha256": "459738006ad9a60234a0787ff19e1ecc376602a2ae3038663abebabd4e1642fb"
   },
   {
     "path": "firmware/f407/startup_stm32f407xx.s",
@@ -2405,11 +2405,11 @@
   },
   {
     "path": "firmware/g3507/user/can_port_mspm0.c",
-    "sha256": "d04baa610efcc49613b0724bfabf0d2549e884739e4e9c93002a453fb90f338a"
+    "sha256": "8798e1136507f7236e317385184db5d70443c0a9c46ba7f909227d58b598c657"
   },
   {
     "path": "firmware/g3507/user/can_port_mspm0.h",
-    "sha256": "9999f7e15e812aa6a82f0f341f4ef390c4455d27f7d4cd174213ec186676c1f8"
+    "sha256": "005dcb4694e90a0ddd4755d5259ccece842c9c362fbbe657196c65919b913058"
   },
   {
     "path": "firmware/g3507/user/main.c",
@@ -2433,7 +2433,7 @@
   },
   {
     "path": "firmware/g3507/user/window_can_app.c",
-    "sha256": "25552e1cfdb5a93a0711fc5ad8f22046b15450a546a2d7d24ae4eb3536d60fb8"
+    "sha256": "e36f61de5e172f3ed2b3acc6a608b10160aa9ee53e4717dbfe3a8eacf1ddacb3"
   },
   {
     "path": "firmware/g3507/user/window_can_app.h",
@@ -2441,7 +2441,7 @@
   },
   {
     "path": "firmware/g3507/user/zdt_uart_mspm0.c",
-    "sha256": "6464b902895539ffb2d613fb122c34451bde3f5755f5e57af5bb106b48a6615c"
+    "sha256": "4aa7cb7cae959563af14d97c2463ca14b858d77a030d0d5bbbfd9cbd250512ba"
   },
   {
     "path": "firmware/g3507/user/zdt_uart_mspm0.h",
@@ -2501,11 +2501,11 @@
   },
   {
     "path": "shared/window_state.c",
-    "sha256": "f02dd984f6cbeba2c7a04274449d9b6e12d21e3ab9b42df1e2d3f205d48b0ee1"
+    "sha256": "33bf5efc527ca2f9e207352970b54d85ed0449881bbdbac26ad2107dbd859e0b"
   },
   {
     "path": "shared/window_state.h",
-    "sha256": "5653419ffc2672b64b2dfc66e55c7db28637eba6702fce21703a964d031dd6f5"
+    "sha256": "3e1d8deec512eb49281f87b4bd62a5d778a29085d8ffba9569ae9120de7815a5"
   },
   {
     "path": "shared/zdt_motor_can.c",
@@ -2525,7 +2525,7 @@
   },
   {
     "path": "tests/host/app_button_test.c",
-    "sha256": "96dbe40280af460d7d74d36f67431c3b33108020f6a6fdfc551f24ca97fc526e"
+    "sha256": "b4c0cffa9537f0baec95140249e86d4ca8d8f000438fbbfe0d9855e0f8b6e63f"
   },
   {
     "path": "tests/host/can_protocol_test.c",
@@ -2565,7 +2565,7 @@
   },
   {
     "path": "tests/host/window_state_test.c",
-    "sha256": "6aa9810881f10126ddb631787a861c0b3b46134d6033383f0262e8ce70eeeca2"
+    "sha256": "cc4744f36be7fbfb5e4125cb7e038ce56b376ef969de41a5b6158c8036ab710d"
   },
   {
     "path": "tests/host/zdt_motor_can_test.c",

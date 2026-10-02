@@ -246,6 +246,11 @@ static window_request_command_t s_button_pending_command;
 static uint8_t s_button_pending_sequence;
 static uint8_t s_button_demo_motion_seen;
 static uint32_t s_button_pending_since_ms;
+static bool s_button_recovery_zero_pending;
+static bool s_button_recovery_toggle_pending;
+static uint32_t s_button_recovery_started_ms;
+/* Debug input uses the same event handler and gates as a physical button. */
+volatile uint32_t g_can_physical_button_event_inject;
 static app_can_status_snapshot_t s_latest_status;
 static uint32_t s_consumed_status_generation;
 static uint32_t s_last_tx_task_cycle_ms;
@@ -321,6 +326,8 @@ static void App_CanPhysical_RestartRecovery(uint8_t stop_sequence,
   app_button_deferred_toggle_cancel(&s_button_deferred_toggle);
   s_button_pending_command = WINDOW_REQUEST_NONE;
   s_button_demo_motion_seen = 0U;
+  s_button_recovery_zero_pending = false;
+  s_button_recovery_toggle_pending = false;
   if (matrix_interrupted) {
     g_can_physical_matrix_result = APP_CAN_MATRIX_FAIL;
     g_can_physical_matrix_stage = APP_CAN_MATRIX_FAILED;
@@ -1023,11 +1030,15 @@ static void App_CanPhysical_ServiceTx(void)
       }
     }
     tx_kind = APP_CAN_TX_MATRIX;
-  } else if (g_can_physical_tx_success_count < CAN_TEST_FRAME_COUNT) {
+  }
+#if defined(DUALECU_ENABLE_BOOT_CAN_PROBE)
+  else if (g_can_physical_tx_success_count < CAN_TEST_FRAME_COUNT) {
     tx_kind = APP_CAN_TX_PROBE;
     can_test_frame_encode(CAN_TEST_FRAME_F407_TO_G3507_ID,
                           g_can_physical_tx_success_count + 1U, &frame);
-  } else {
+  }
+#endif
+  else {
     can_protocol_command_t command = {0};
     if (!can_recovery_client_get_command_at(
             &s_recovery_client, now_ms, &command)) {
@@ -1235,6 +1246,8 @@ static void App_CanPhysical_RequestLocalStop(
   app_button_deferred_toggle_cancel(&s_button_deferred_toggle);
   s_button_pending_command = WINDOW_REQUEST_NONE;
   s_button_demo_motion_seen = 0U;
+  s_button_recovery_zero_pending = false;
+  s_button_recovery_toggle_pending = false;
   if (s_window_requests.stop_latched != false) {
     if ((g_can_physical_local_stop_reason == APP_CAN_LOCAL_STOP_USER_BUTTON) &&
         (reason != APP_CAN_LOCAL_STOP_USER_BUTTON)) {
@@ -1392,6 +1405,33 @@ static void App_CanPhysical_ServiceButton(void)
       (g_can_physical_rx_remote_offline == 0U) &&
       (g_can_physical_rx_overflow_active == 0U) &&
       !App_CanPhysical_MatrixIsActive() && !App_CanPhysical_T04IsActive();
+  if (s_button_recovery_zero_pending) {
+    if (s_window_requests.stop_latched ||
+        (g_can_physical_rx_remote_offline != 0U) ||
+        (g_can_physical_rx_overflow_active != 0U) ||
+        ((uint32_t)(now_ms - s_button_recovery_started_ms) >
+         APP_BUTTON_ZERO_CONFIRM_TIMEOUT_MS)) {
+      s_button_recovery_zero_pending = false;
+      s_button_recovery_toggle_pending = false;
+    } else if (button_safe) {
+      const uint8_t sequence = App_CanPhysical_NextSequence();
+      s_button_recovery_zero_pending = false;
+      if (window_request_submit(&s_window_requests,
+            (window_request_t){WINDOW_REQUEST_DEMO_SET_ZERO, sequence})) {
+        s_button_pending_command = WINDOW_REQUEST_DEMO_SET_ZERO;
+        s_button_pending_sequence = sequence;
+        s_button_pending_since_ms = now_ms;
+        s_window_has_tx_attempt = 0U;
+        if (s_button_recovery_toggle_pending) {
+          app_button_deferred_toggle_arm(&s_button_deferred_toggle,
+                                         sequence, now_ms);
+        }
+      } else {
+        ++g_can_physical_button_rejected_count;
+      }
+      s_button_recovery_toggle_pending = false;
+    }
+  }
   if (app_button_deferred_toggle_take(
           &s_button_deferred_toggle, button_safe,
           snapshot.status.is_calibrated,
@@ -1414,6 +1454,15 @@ static void App_CanPhysical_ServiceButton(void)
       (s_button_pending_command == WINDOW_REQUEST_DEMO_TOGGLE) ||
       (status_ready && (snapshot.status.state != CAN_PROTOCOL_STATE_STOP));
   event = app_button_update(&s_button, pressed, motion_pending, now_ms);
+  if (g_can_physical_button_event_inject != 0U) {
+    const uint32_t injected_event = g_can_physical_button_event_inject;
+    g_can_physical_button_event_inject = 0U;
+    if ((event == APP_BUTTON_NONE) &&
+        (injected_event <= (uint32_t)APP_BUTTON_STOP)) {
+      event = (app_button_event_t)injected_event;
+      if (motion_pending) { event = APP_BUTTON_STOP; }
+    }
+  }
   if (event == APP_BUTTON_NONE) {
     return;
   }
@@ -1433,6 +1482,11 @@ static void App_CanPhysical_ServiceButton(void)
           (s_window_requests.stop_latched != false) &&
           (g_can_physical_local_stop_reason ==
            APP_CAN_LOCAL_STOP_REMOTE_MOTOR),
+      .communication_stop_latched =
+          s_window_requests.stop_latched &&
+          ((g_can_physical_local_stop_reason == APP_CAN_LOCAL_STOP_STATUS_OFFLINE) ||
+           (g_can_physical_local_stop_reason == APP_CAN_LOCAL_STOP_TX_FAILURE)) &&
+          (snapshot.status.fault != CAN_PROTOCOL_FAULT_CAN_RX_OVERFLOW),
       .rx_overflow = (g_can_physical_rx_overflow_active != 0U) ||
           (s_rx_overflow_latched != 0U),
       .remote_offline = g_can_physical_rx_remote_offline != 0U
@@ -1444,6 +1498,8 @@ static void App_CanPhysical_ServiceButton(void)
         g_can_physical_local_stop_reason = APP_CAN_LOCAL_STOP_NONE;
         g_can_physical_window_request_rearm_result = 1U;
         App_CanPhysical_RestartRecovery(recovery_sequence, false);
+        s_button_recovery_zero_pending = true;
+        s_button_recovery_started_ms = now_ms;
         s_window_has_tx_attempt = 0U;
         s_window_has_tx_timestamp = 0U;
       } else {
@@ -1455,6 +1511,11 @@ static void App_CanPhysical_ServiceButton(void)
   }
   if (event == APP_BUTTON_STOP) {
     App_CanPhysical_RequestLocalStop(APP_CAN_LOCAL_STOP_USER_BUTTON);
+    return;
+  }
+  if ((event == APP_BUTTON_TOGGLE) && s_button_recovery_zero_pending) {
+    /* Only a new user press may wait for recovery; old motions were discarded. */
+    s_button_recovery_toggle_pending = true;
     return;
   }
   if ((event == APP_BUTTON_TOGGLE) &&
@@ -1480,8 +1541,7 @@ static void App_CanPhysical_ServiceButton(void)
       (s_window_requests.stop_latched != false) ||
       (s_button_pending_command != WINDOW_REQUEST_NONE) ||
       App_CanPhysical_MatrixIsActive() || App_CanPhysical_T04IsActive() ||
-      ((event == APP_BUTTON_TOGGLE) && !snapshot.status.is_calibrated) ||
-      ((event == APP_BUTTON_SET_ZERO) && snapshot.status.is_calibrated)) {
+      ((event == APP_BUTTON_TOGGLE) && !snapshot.status.is_calibrated)) {
     ++g_can_physical_button_rejected_count;
     return;
   }

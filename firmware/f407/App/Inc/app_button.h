@@ -21,6 +21,7 @@ typedef struct
     bool remote_stopped;
     bool stop_confirmed;
     bool remote_motor_stop_latched;
+    bool communication_stop_latched;
     bool rx_overflow;
     bool remote_offline;
 } app_button_recovery_context_t;

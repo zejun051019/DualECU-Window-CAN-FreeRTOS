@@ -61,6 +61,9 @@ window_state_rx_result_t window_state_receive_frame_at(
 /* Call from the bounded local safety cadence; elapsed-time math wraps safely. */
 void window_state_tick(window_state_t *window, uint32_t now_ms);
 
+/* Link recovery never clears a business fault or restores an old motion. */
+void window_state_note_can_bus_off(window_state_t *window, uint32_t now_ms);
+
 /*
  * Records that a local actuator guard stopped the output. It preserves the
  * accepted command/sequence so a repeated old motion event cannot restart it.

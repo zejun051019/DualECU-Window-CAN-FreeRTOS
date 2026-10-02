@@ -1096,12 +1096,28 @@ bool window_can_app_init(void)
 
 void window_can_app_process(void)
 {
+    static bool busOffLatched;
     const uint32_t nowMs = windowCanAppNowMs();
 
     if (g_window_can_init_result != WINDOW_CAN_APP_INIT_OK)
     {
         return;
     }
+
+    const bool busOffActive = can_port_mspm0_service_bus_off(nowMs);
+    if (busOffActive && !busOffLatched)
+    {
+        /* Restore communication only after local motion is made safe. */
+        window_state_note_can_bus_off(&s_windowState, nowMs);
+#if defined(DUALECU_ENABLE_ZDT_UART_CONTROL)
+        window_demo_cancel(&s_demo);
+        g_window_can_demo_active = 0U;
+        zdt_uart_mspm0_invalidate_range();
+        (void)zdt_uart_mspm0_request_stop();
+#endif
+        windowCanAppPublishState();
+    }
+    busOffLatched = busOffActive;
 
     if ((uint32_t)(nowMs - s_lastSafetyCheckMs) >=
         WINDOW_CAN_APP_SAFETY_PERIOD_MS)

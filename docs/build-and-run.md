@@ -50,6 +50,16 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\build.ps1 -Target G3
 
 预期为主机检查14/14通过，生成 `firmware/f407/build/Debug/f407.elf` 和 `firmware/g3507/build-zdt-uart-control/MSPM0.elf`。G3507 电机演示使用 `DUALECU_ENABLE_ZDT_UART_CONTROL=ON`，正式构建的故障注入开关为OFF。
 
+### 构建选项
+
+| 目标 / 选项 | 默认演示配置 | 用途 |
+|---|---|---|
+| F407 / `DUALECU_ENABLE_BOOT_CAN_PROBE` | OFF | ON 时运行原1000帧上电链路诊断；会延后正常按键服务，日常演示关闭 |
+| G3507 / `DUALECU_ENABLE_ZDT_UART_CONTROL` | ON（构建入口设置） | UART 电机命令与反馈、演示和本地保护 |
+| G3507 / `DUALECU_ENABLE_TEST_FAULT_INJECTION` | OFF | 诊断构建可软件丢弃反馈等；不等同物理故障 |
+
+F407 如需单独运行链路诊断，在已有构建目录执行 `cmake -S firmware/f407 -B firmware/f407/build/Debug -DDUALECU_ENABLE_BOOT_CAN_PROBE=ON` 后构建。回到演示时将同一选项设为OFF并重新构建。OFF 时启动诊断计数为0是预期行为，正常命令/状态计数仍应增长。
+
 连接指定探针及已核对的台架后下载：
 
 ```powershell
@@ -57,7 +67,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\flash.ps1 -Target F4
 powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\flash.ps1 -Target G3507
 ```
 
-核对 J-Link 校验输出和 OpenOCD `Verified OK`。分开刷写会暂时中断双板通信，应先回到STOP并完成显式恢复；刷写/重启不恢复旧运动。运行时先长按 KEY_UP / WKUP 建立临时范围，再以新短按执行演示。
+核对 J-Link 校验输出和 OpenOCD `Verified OK`。分开刷写会暂时中断双板通信，应先回到STOP并完成显式恢复；刷写/重启不恢复旧运动。运行时先长按 KEY_UP / WKUP 约2.5秒后松开，完成恢复并建立临时范围，再以新短按执行演示。电机重新上电后把当前位置当作其内部零点，不沿用旧绝对坐标；先重新长按设零。若故障原因仍活动，运动应被拒绝，先查状态而非反复短按。
 
 ## 调试观察
 
@@ -66,5 +76,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\tools\flash.ps1 -Target G3
 - F407：`g_can_physical_button_event_count`、`g_can_physical_button_rejected_count`、远端状态及接收年龄。
 - G3507：`g_window_can_state`、`g_window_can_fault`、`g_window_can_demo_active`、`g_zdt_uart_range_valid`、`g_zdt_uart_position_tenths`。
 - 通信异常：F407 CAN ESR、G3507 MCAN PSR/ECR；本台架曾观察到间歇Bus-Off，需要区分离线锁存、总线错误与按键事件拒绝。
+- G3507 总线服务：`g_can_port_bus_off_count`、`g_can_port_recovery_attempt_count`、`g_can_port_recovery_complete_count`、`g_can_port_last_error_code`。错误码是历史观察值，不代表当前仍故障；总线恢复计数增长也不等于业务解锁。先确认状态报文持续更新，再观察握手、fault和range valid。
 
 调试器暂停一端会改变时序；用于读数的ELF必须与板上镜像匹配。不能用旧符号地址解释新版RAM。构建、下载校验和实际运动是三个不同验证层次。

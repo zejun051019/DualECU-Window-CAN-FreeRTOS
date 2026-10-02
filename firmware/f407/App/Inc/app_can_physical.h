@@ -167,6 +167,7 @@ extern volatile uint32_t g_can_physical_button_raw;
 extern volatile uint32_t g_can_physical_button_last_event;
 extern volatile uint32_t g_can_physical_button_event_count;
 extern volatile uint32_t g_can_physical_button_rejected_count;
+extern volatile uint32_t g_can_physical_button_event_inject;
 
 uint8_t App_CanPhysical_Configure(CAN_HandleTypeDef *can);
 uint8_t App_CanPhysical_Start(void);

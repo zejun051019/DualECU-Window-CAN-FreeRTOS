@@ -54,5 +54,96 @@
     "original_test_id": "CAN-WINDOW-BUTTON-DEMO-001",
     "source_samples_sha256": "1884c70e7f32818a91f6ae919d8fe40a1facfe2668b579d9c33cad5b926fe5ab",
     "public_sample_file": "device-error.json"
+  },
+  {
+    "scenario": "demo-recovery-motion",
+    "samples": 10,
+    "original_test_id": "DEMO-RELIABILITY-20261002",
+    "input_type": "debug_button_events_with_physical_motor",
+    "target_elf_sha256": {
+      "f407": "53DF58554398DDC3B8AF21F06B0ACD8BD981CBC8700BB20FCF49DA43F9B035B9",
+      "g3507": "04F054600F38FCC259E60D859F4B0D609777A56C3257EDE9EB6FC04CAED61881"
+    },
+    "source_samples_sha256": "79131676f5468cb86f85c544a28113ba9c396ec01023e1391df4a6f442763654",
+    "public_sample_file": "demo-recovery-motion.json",
+    "public_sample_sha256": "615124620e08c29144ed155519c55e017689e4b582040db4a4f7c88323831d8b"
+  },
+  {
+    "scenario": "demo-recovery-reset-error",
+    "samples": 9,
+    "original_test_id": "DEMO-RELIABILITY-20261002",
+    "input_type": "mcu_reset_and_software_parsed_device_error",
+    "target_elf_sha256": {
+      "f407": "53DF58554398DDC3B8AF21F06B0ACD8BD981CBC8700BB20FCF49DA43F9B035B9",
+      "g3507": "04F054600F38FCC259E60D859F4B0D609777A56C3257EDE9EB6FC04CAED61881"
+    },
+    "source_samples_sha256": "9469e4699e7882246d7c7eb47c18ca20b64f166ac705a8919f8c5bb195293870",
+    "public_sample_file": "demo-recovery-reset-error.json",
+    "public_sample_sha256": "8e92fc1ef6c8af29a7f19c4ecbaa194833a74c55af8d807f50b9e0361b1cf7a3"
+  },
+  {
+    "scenario": "demo-recovery-user-button",
+    "samples": 1,
+    "original_test_id": "DEMO-RELIABILITY-20261002",
+    "input_type": "user_physical_button_report_and_read_only_snapshot",
+    "target_elf_sha256": {
+      "f407": "53DF58554398DDC3B8AF21F06B0ACD8BD981CBC8700BB20FCF49DA43F9B035B9",
+      "g3507": "04F054600F38FCC259E60D859F4B0D609777A56C3257EDE9EB6FC04CAED61881"
+    },
+    "source_samples_sha256": "73bf1b99e7ba64340055ce47ae21cfc0955b2249bb9b04eeaaef4c9afd79a4b6",
+    "public_sample_file": "demo-recovery-user-button.json",
+    "public_sample_sha256": "6fa137421885d45fba6718b04ce08455407c4f45f135cd7cdfc8d7c0e8838fae"
+  },
+  {
+    "scenario": "demo-recovery-monitor",
+    "samples": 17,
+    "original_test_id": "DEMO-RELIABILITY-20261002",
+    "input_type": "read_only_monitor",
+    "target_elf_sha256": {
+      "f407": "53DF58554398DDC3B8AF21F06B0ACD8BD981CBC8700BB20FCF49DA43F9B035B9",
+      "g3507": "04F054600F38FCC259E60D859F4B0D609777A56C3257EDE9EB6FC04CAED61881"
+    },
+    "source_samples_sha256": "ea0903b58cc2873fbf1a110dfeadc2be2745f963e13f8027eb9dfce8d742cfd2",
+    "public_sample_file": "demo-recovery-monitor.json",
+    "public_sample_sha256": "8d3956d475c37ff3fe7b28721395f3cc1295b541ff63c892112b370cfb880a3c"
+  },
+  {
+    "scenario": "demo-recovery-rise-trace",
+    "samples": 19,
+    "original_test_id": "DEMO-RELIABILITY-20261002",
+    "input_type": "debug_button_event_motor_feedback",
+    "target_elf_sha256": {
+      "f407": "53DF58554398DDC3B8AF21F06B0ACD8BD981CBC8700BB20FCF49DA43F9B035B9",
+      "g3507": "04F054600F38FCC259E60D859F4B0D609777A56C3257EDE9EB6FC04CAED61881"
+    },
+    "source_samples_sha256": "aae8bcb3f077664dc37b818bf6b54297cd4eacc7ff834cc9383b5d5ba846b568",
+    "public_sample_file": "demo-recovery-rise-trace.json",
+    "public_sample_sha256": "aae8bcb3f077664dc37b818bf6b54297cd4eacc7ff834cc9383b5d5ba846b568"
+  },
+  {
+    "scenario": "demo-recovery-return-trace",
+    "samples": 19,
+    "original_test_id": "DEMO-RELIABILITY-20261002",
+    "input_type": "debug_button_event_motor_feedback",
+    "target_elf_sha256": {
+      "f407": "53DF58554398DDC3B8AF21F06B0ACD8BD981CBC8700BB20FCF49DA43F9B035B9",
+      "g3507": "04F054600F38FCC259E60D859F4B0D609777A56C3257EDE9EB6FC04CAED61881"
+    },
+    "source_samples_sha256": "10399832b139d69b370588ca14eeccf64036c38868e104e1e098ecb912b7dddb",
+    "public_sample_file": "demo-recovery-return-trace.json",
+    "public_sample_sha256": "10399832b139d69b370588ca14eeccf64036c38868e104e1e098ecb912b7dddb"
+  },
+  {
+    "scenario": "demo-recovery-stop-return-trace",
+    "samples": 1,
+    "original_test_id": "DEMO-RELIABILITY-20261002",
+    "input_type": "debug_button_event_motor_feedback",
+    "target_elf_sha256": {
+      "f407": "53DF58554398DDC3B8AF21F06B0ACD8BD981CBC8700BB20FCF49DA43F9B035B9",
+      "g3507": "04F054600F38FCC259E60D859F4B0D609777A56C3257EDE9EB6FC04CAED61881"
+    },
+    "source_samples_sha256": "7e520ff9991e51f7daeedf286ebe24c982f1130f8a2bbd362579b8f1ded5db78",
+    "public_sample_file": "demo-recovery-stop-return-trace.json",
+    "public_sample_sha256": "9fc61ce939cb93d1cbf76434f1bfe99b7c1d46c987747fbe74da15750d8d3b29"
   }
 ]

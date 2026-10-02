@@ -64,6 +64,12 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 # Add project symbols (macros)
+option(DUALECU_ENABLE_BOOT_CAN_PROBE
+    "Run the 1000-frame diagnostic before application recovery" OFF)
+if(DUALECU_ENABLE_BOOT_CAN_PROBE)
+    target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+        DUALECU_ENABLE_BOOT_CAN_PROBE=1)
+endif()
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined symbols
 )

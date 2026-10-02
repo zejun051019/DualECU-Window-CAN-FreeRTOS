@@ -78,9 +78,10 @@ bool app_button_requests_motor_recovery(
     app_button_event_t event, const app_button_recovery_context_t *context)
 {
     return (event == APP_BUTTON_SET_ZERO) && (context != NULL) &&
-           context->status_fresh && context->remote_motor_fault &&
+           context->status_fresh &&
            context->remote_stopped && context->stop_confirmed &&
-           context->remote_motor_stop_latched && !context->rx_overflow &&
+           ((context->remote_motor_fault && context->remote_motor_stop_latched) ||
+            context->communication_stop_latched) && !context->rx_overflow &&
            !context->remote_offline;
 }
 

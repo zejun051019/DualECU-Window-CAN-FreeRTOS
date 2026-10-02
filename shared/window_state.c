@@ -222,6 +222,12 @@ void window_state_tick(window_state_t *window, uint32_t now_ms)
         return;
     }
 
+    window_state_note_can_bus_off(window, now_ms);
+}
+
+void window_state_note_can_bus_off(window_state_t *window, uint32_t now_ms)
+{
+    if (window == NULL) { return; }
     window->state = CAN_PROTOCOL_STATE_STOP;
     /* Keep the existing recovery cause; always discard the old seq baseline. */
     if (window->fault == CAN_PROTOCOL_FAULT_NONE)

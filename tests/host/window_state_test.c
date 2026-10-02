@@ -536,8 +536,37 @@ static void test_demo_commands_do_not_replay_motion(void)
     assert(!window_state_note_demo_output(&window, CAN_PROTOCOL_STATE_UP));
 }
 
+static void test_bus_off_stops_without_clearing_existing_fault(void)
+{
+    window_state_t window;
+    can_protocol_frame_t frame;
+    window_state_init(&window);
+    enter_ready(&window, 10U, 10U);
+    frame = make_command(13U, CAN_PROTOCOL_CMD_UP);
+    assert(window_state_receive_frame(&window, &frame, 20U) == WINDOW_STATE_RX_ACCEPTED);
+    window_state_note_can_bus_off(&window, 21U);
+    assert(window.state == CAN_PROTOCOL_STATE_STOP);
+    assert(window.fault == CAN_PROTOCOL_FAULT_COMM_TIMEOUT);
+    assert(!window.last_sequence_valid);
+    assert(window.recovery_phase == WINDOW_RECOVERY_WAIT_STOP);
+    assert(window_state_receive_frame(&window, &frame, 22U) == WINDOW_STATE_RX_GATED);
+    frame = make_command(14U, CAN_PROTOCOL_CMD_STOP);
+    assert(window_state_receive_frame(&window, &frame, 23U) == WINDOW_STATE_RX_BASELINE_ACCEPTED);
+    frame = make_command(15U, CAN_PROTOCOL_CMD_CLEAR_FAULT);
+    assert(window_state_receive_frame(&window, &frame, 24U) == WINDOW_STATE_RX_CLEAR_SUCCEEDED);
+    assert(window.state == CAN_PROTOCOL_STATE_STOP);
+    frame = make_command(16U, CAN_PROTOCOL_CMD_STOP);
+    assert(window_state_receive_frame(&window, &frame, 25U) == WINDOW_STATE_RX_ACCEPTED);
+    assert(window.state == CAN_PROTOCOL_STATE_STOP);
+    window_state_note_motor_fault(&window, 26U);
+    window_state_note_can_bus_off(&window, 27U);
+    assert(window.fault == CAN_PROTOCOL_FAULT_MOTOR_LOCAL);
+    assert(window.motor_fault_active);
+}
+
 int main(void)
 {
+    test_bus_off_stops_without_clearing_existing_fault();
     test_demo_commands_do_not_replay_motion();
     test_motor_fault_requires_new_clear_and_new_motion();
     test_startup_and_recovery_gates();

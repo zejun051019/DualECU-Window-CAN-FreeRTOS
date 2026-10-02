@@ -118,7 +118,9 @@ bool zdt_uart_mspm0_set_bench_range(uint32_t now_ms)
 bool zdt_uart_mspm0_set_demo_range(uint32_t now_ms)
 {
     const int32_t current = g_zdt_uart_position_tenths;
-    if (s_range.valid || !zdt_uart_mspm0_motion_ready(now_ms) ||
+    /* A NEW explicit long press may rebase an existing stationary RAM range. */
+    if (!zdt_uart_mspm0_motion_ready(now_ms) ||
+        ((g_zdt_uart_status_flags & ZDT_UART_STATUS_POSITION_REACHED) == 0U) ||
         s_moveActive || (g_zdt_uart_move_request != ZDT_UART_MOVE_REQUEST_NONE) ||
         (g_zdt_uart_move_result == ZDT_UART_MOVE_RESULT_RUNNING) ||
         ((int64_t)current + 900 > INT32_MAX) ||

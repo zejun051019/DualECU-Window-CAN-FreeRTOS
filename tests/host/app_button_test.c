@@ -102,6 +102,28 @@ static void test_immediate_short_press_waits_for_confirmed_zero(void)
     assert(!app_button_deferred_toggle_take(&toggle, true, true, 0xFEU, 30U));
 }
 
+static void test_long_press_recovers_communication_latch_but_never_short_press(void)
+{
+    app_button_recovery_context_t context = {
+        .status_fresh = true,
+        .remote_motor_fault = false,
+        .remote_stopped = true,
+        .stop_confirmed = true,
+        .remote_motor_stop_latched = false,
+        .communication_stop_latched = true
+    };
+    assert(app_button_requests_motor_recovery(APP_BUTTON_SET_ZERO, &context));
+    assert(!app_button_requests_motor_recovery(APP_BUTTON_TOGGLE, &context));
+    context.remote_offline = true;
+    assert(!app_button_requests_motor_recovery(APP_BUTTON_SET_ZERO, &context));
+    context.remote_offline = false;
+    context.remote_stopped = false;
+    assert(!app_button_requests_motor_recovery(APP_BUTTON_SET_ZERO, &context));
+    context.remote_stopped = true;
+    context.rx_overflow = true;
+    assert(!app_button_requests_motor_recovery(APP_BUTTON_SET_ZERO, &context));
+}
+
 static void test_deferred_short_press_drops_on_fault_or_timeout(void)
 {
     app_button_deferred_toggle_t toggle = {0};
@@ -117,6 +139,7 @@ static void test_deferred_short_press_drops_on_fault_or_timeout(void)
 
 int main(void)
 {
+    test_long_press_recovers_communication_latch_but_never_short_press();
     test_short_long_and_stop();
     test_held_at_boot_and_tick_wrap();
     test_long_press_released_at_threshold();
